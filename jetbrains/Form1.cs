@@ -29,6 +29,10 @@ namespace jetbrains
         private int Y;
         private int W;
         private int H;
+        private float f1size;
+        private float f2size;
+        //private Font font1;
+        //private Font font2;
         public Form1()
         {
             listener.Prefixes.Add("http://localhost:8080/");
@@ -56,18 +60,26 @@ namespace jetbrains
                         reader = new StreamReader(body, contentEncoding);
                         s = reader.ReadToEnd();
                         PrintDocument printDocument = new PrintDocument();
-                        printDocument.PrinterSettings.PrinterName = "Microsoft Print to PDF";
+                        //printDocument.PrinterSettings.PrinterName = "Microsoft Print to PDF";
+                        printDocument.PrinterSettings.PrinterName = "EPSON TM-P20 Receipt";
+                        //printDocument.PrinterSettings.PrinterName = "THERMAL Receipt #1";
                         printDocument.PrintPage += new PrintPageEventHandler(pd_PrintPage);
                         de = printDocument.PrinterSettings.DefaultPageSettings;
                         rect = de.Bounds;
-                        rect.X = 0;
-                        rect.Y = 0;
-                        rect.Width = 284;
-                        rect.Height = 1169;
+                        //rect.X = 0;
+                        //rect.Y = 0;
+                        //rect.Width = 228;
+                        //rect.Height = 1169;
                         X = rect.X;
                         Y = rect.Y;
                         W = rect.Width;
                         H = rect.Height;
+                        Console.WriteLine(W);
+                        Console.WriteLine(H);
+                        if(W==228)
+                            {
+                            W = W - 30;
+                        }
                         printDocument.Print();
                         body.Close();
                         reader.Close();
@@ -109,14 +121,19 @@ namespace jetbrains
             string str5 = dictionary["DDate"][0];
             string str6 = dictionary["Time"][0];
             Console.WriteLine(dictionary["itemnames"][0]);
-            Font font1 = new Font("Arial", 8f, FontStyle.Bold, GraphicsUnit.Point);
-            Font font2 = new Font("Arial", 6f, FontStyle.Bold, GraphicsUnit.Point);
-            Font font3 = new Font("Arial", 10f, FontStyle.Bold, GraphicsUnit.Point);
-            Font font4 = new Font("Arial", 8f, GraphicsUnit.Point);
-            Font font5 = new Font("Arial", 6f, GraphicsUnit.Point);
+            f1size = 8f;
+            f2size = 6f;
+            if (rect.Width==284)
+            {
+                f1size += 2f;
+                f2size += 2f;
+
+            }
+            Font font1 = new Font("Arial", f1size, FontStyle.Bold, GraphicsUnit.Point);
+            Font font2 = new Font("Arial", f2size, FontStyle.Bold, GraphicsUnit.Point);
             SolidBrush solidBrush = new SolidBrush(Color.Black);
             Pen pen = new Pen(Color.Black);
-            ev.Graphics.DrawRectangle(pen, X, Y, 228, 1169);
+            //ev.Graphics.DrawRectangle(pen, X, Y, 228, 1169);
             StringFormat format1 = new StringFormat();
             format1.Alignment = StringAlignment.Center;
             StringFormat format2 = new StringFormat();
@@ -134,7 +151,7 @@ namespace jetbrains
             int x1 = X;
             Y += 5;
             for (; x1 < W; x1 += 5)
-                ev.Graphics.DrawString("-", font5, Brushes.Black, x1, Y);
+                ev.Graphics.DrawString("-", font2, Brushes.Black, x1, Y);
             int width = W - 20;
             rectf = Crect(X, Y += 10, width, 20);
             ev.Graphics.DrawString("Place of supply: " + str1.ToString(), font2, Brushes.Black, rectf, format2);
@@ -148,7 +165,7 @@ namespace jetbrains
             int x2 = X;
             Y += 10;
             for (; x2 < W; x2 += 5)
-                ev.Graphics.DrawString("-", font5, Brushes.Black, x2, Y);
+                ev.Graphics.DrawString("-", font2, Brushes.Black, x2, Y);
             rectf = Crect(X, Y += 10, width / 2 + 30, 20);
             ev.Graphics.DrawString("Item Name", font2, Brushes.Black, rectf, format1);
             ev.Graphics.DrawString("QTY", font2, Brushes.Black, rectf, format3);
@@ -158,7 +175,7 @@ namespace jetbrains
             int x3 = X;
             Y += 10;
             for (; x3 < W; x3 += 5)
-                ev.Graphics.DrawString("-", font5, Brushes.Black, (float)x3, (float)Y);
+                ev.Graphics.DrawString("-", font2, Brushes.Black, (float)x3, (float)Y);
             List<string> stringList = new List<string>();
             for (int index = 0; index < dictionary["itemnames"].Count - 1; index += 4)
                 stringList.Add(dictionary["itemnames"][index]);
@@ -176,7 +193,7 @@ namespace jetbrains
             int x4 = X;
             Y -= 10;
             for (; x4 < W; x4 += 5)
-                ev.Graphics.DrawString("-", font5, Brushes.Black, (float)x4, (float)Y);
+                ev.Graphics.DrawString("-", font2, Brushes.Black, (float)x4, (float)Y);
             Y += 10;
             rectf = Crect(X, Y, width / 2, 20);
             ev.Graphics.DrawString("Total: ", font2, Brushes.Black, rectf, format1);
@@ -197,7 +214,7 @@ namespace jetbrains
             int x5 = X;
             Y += 10;
             for (; x5 < W; x5 += 5)
-                ev.Graphics.DrawString("-", font5, Brushes.Black, (float)x5, (float)Y);
+                ev.Graphics.DrawString("-", font2, Brushes.Black, (float)x5, (float)Y);
             rectf = Crect(X, Y += 10, width / 2 + 25, 20);
             ev.Graphics.DrawString("NET PAYABLE(INR)", font1, Brushes.Black, rectf, format1);
             rectf = Crect(X + width / 2 + 45, Y, width / 2 - 45, 20);
@@ -205,7 +222,7 @@ namespace jetbrains
             int x6 = X;
             Y += 10;
             for (; x6 < W; x6 += 5)
-                ev.Graphics.DrawString("-", font5, Brushes.Black, (float)x6, (float)Y);
+                ev.Graphics.DrawString("-", font2, Brushes.Black, (float)x6, (float)Y);
             Y += 10;
             rectf = Crect(X, Y, W, 20);
             ev.Graphics.DrawString("THANK YOU!", font1, Brushes.Black, rectf, format1);
